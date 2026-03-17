@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Kuis Jodoh 😏</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #ffe6f0, #ffd9f0);
+}
+.box {
+  background: linear-gradient(145deg, #ffffff, #ffe6f0);
+  padding: 30px;
+  border-radius: 25px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+  position: relative;
+  animation: fadeIn 1s ease;
+}
+.box::before {
+  content: "💖";
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  font-size: 40px;
+  animation: floatHeart 3s infinite;
+}
+@keyframes fadeIn {from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);}}
+@keyframes floatHeart {0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+h2 {transition: all 0.5s ease; min-height:50px;}
+button {
+  display: block; width:100%; margin:10px 0; padding:14px;
+  border:none; border-radius:12px; background:#ff66a3; color:white;
+  font-size:16px; cursor:pointer; transition: all 0.3s ease;
+}
+button:hover {background:#ff3385; transform:translateY(-2px); box-shadow:0 5px 15px rgba(0,0,0,0.2);}
+.danger {background:#666;}
+.danger:hover {background:#444;}
+canvas {position:fixed; pointer-events:none; top:0; left:0; width:100%; height:100%; z-index:999;}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2 id="question">Kuis siapa jodohmu? 😍</h2>
+<div id="answers">
+  <button onclick="startQuiz()">Mulai</button>
+</div>
+</div>
+
+<canvas id="confetti"></canvas>
+
+<audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+<audio id="confettiSound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
+
+<script>
+const questions = [
+  { q: "Kamu tipe orang seperti apa?", a: ["Santai","Serius","Random"] },
+  { q: "Apa warna favorit kamu?", a: ["Merah","Biru","Hitam","Pink"] },
+  { q: "Kalau chat kamu bales?", a: ["Cepat","Lama","Ghosting 😶"] },
+  { q: "Lebih suka makan?", a: ["Cokelat","Es Krim","Sushi","Pizza"] }
+];
+
+const responses = [
+  "😏 Mau jawab apapun... tetap orang yang mengirimkan kuis ini",
+  "😂 Ngulang lagi? hasilnya tetap orang yang mengirimkan kuis ini",
+  "😈 Maksa ya? tetap saja orang yang mengirimkan kuis ini",
+  "💀 Udah deh... tidak bisa kabur dari orang yang mengirimkan kuis ini",
+  "😆 Serius deh... tetap orang yang mengirimkan kuis ini",
+  "🤭 Kamu berharap beda? tetap orang yang mengirimkan kuis ini",
+  "😜 Jawabanmu tidak mengubah takdir... tetap orang yang mengirimkan kuis ini",
+  "😎 Sistem sudah memastikan... tetap orang yang mengirimkan kuis ini",
+  "🤣 Hasilnya konsisten... orang yang mengirimkan kuis ini",
+  "😈 Mau berapa kali juga... tetap orang yang mengirimkan kuis ini"
+];
+
+let step = -1;
+const firstAttemptKey = "firstAttempt";
+let confettiAnim = null;
+
+const clickSound = document.getElementById("clickSound");
+const confettiSound = document.getElementById("confettiSound");
+
+function playClick(){ clickSound.currentTime=0; clickSound.play().catch(()=>{}); }
+
+function startQuiz() {
+  playClick();
+  nextQuestion();
+}
+
+function nextQuestion() {
+  step++;
+  const q = document.getElementById("question");
+  const a = document.getElementById("answers");
+
+  if(step < questions.length){
+    q.innerText = questions[step].q;
+    a.innerHTML="";
+    questions[step].a.forEach(ans=>{
+      const btn = document.createElement("button");
+      btn.innerText = ans;
+      btn.onclick = ()=>{
+        playClick();
+        nextQuestion();
+      };
+      a.appendChild(btn);
+    });
+  } else {
+    showResult();
+  }
+}
+
+function getRandomResponse() {
+  let index = Math.floor(Math.random()*responses.length);
+  return responses[index];
+}
+
+function showResult() {
+  stopConfetti();
+  const q = document.getElementById("question");
+  const a = document.getElementById("answers");
+
+  q.innerText = "🔍 Menganalisis jawaban...";
+  a.innerHTML="";
+
+  setTimeout(()=>{
+    let message = "";
+    if(!sessionStorage.getItem(firstAttemptKey)){
+      message = "Jodohmu adalah orang yang mengirimkan kuis ini😘";
+      sessionStorage.setItem(firstAttemptKey,"done");
+    } else {
+      message = getRandomResponse();
+    }
+
+    q.innerText = message;
+    launchConfetti();
+    confettiSound.currentTime=0;
+    confettiSound.play().catch(()=>{});
+
+    a.innerHTML = `
+      <button onclick="playClick(); location.reload()">Coba Lagi 🧐</button>
+      <button class="danger" id="tolakBtn" onclick="playClick(); tolakTakdir()">Tolak Takdir ❌</button>
+      <button onclick="playClick(); resetTries()">Reset 🤯</button>
+    `;
+  },1200);
+}
+
+function tolakTakdir(){
+  stopConfetti();
+  const q = document.getElementById("question");
+  const tolakBtn = document.getElementById("tolakBtn");
+  if(tolakBtn) tolakBtn.remove(); // tombol hilang
+  const a = document.getElementById("answers");
+
+  q.innerText = "😤 Menolak takdir...";
+  setTimeout(()=>{
+    q.innerText = "⚠️ Takdirmu sudah diputuskan dan tidak dapat ditolak😛";
+    // tombol tersisa cuma Coba Lagi & Reset, tidak perlu buat ulang karena Tolak Takdir sudah dihapus
+  },800);
+}
+
+function resetTries(){
+  sessionStorage.clear();
+  stopConfetti();
+  location.reload();
+}
+
+// Confetti
+function launchConfetti(){
+  stopConfetti();
+  const canvas = document.getElementById("confetti");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const confettiCount = 150;
+  const confetti = [];
+
+  for(let i=0;i<confettiCount;i++){
+    confetti.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height - canvas.height,
+      r: Math.random()*6+4,
+      d: Math.random()*confettiCount,
+      color: `hsl(${Math.random()*360}, 100%, 50%)`,
+      tilt: Math.random()*10-10
+    });
+  }
+
+  let angle = 0;
+  confettiAnim = setInterval(()=>{
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    confetti.forEach(c=>{
+      ctx.beginPath();
+      ctx.lineWidth = c.r/2;
+      ctx.strokeStyle = c.color;
+      ctx.moveTo(c.x+c.tilt+angle/2, c.y);
+      ctx.lineTo(c.x+c.tilt, c.y+c.tilt+angle/2);
+      ctx.stroke();
+    });
+    angle += 0.01;
+    confetti.forEach(c=>{
+      c.y += Math.cos(angle+c.d)+1+c.r/2;
+      c.x += Math.sin(angle);
+      if(c.y>canvas.height){c.y=0; c.x=Math.random()*canvas.width;}
+    });
+  },20);
+
+  setTimeout(()=>stopConfetti(),2500);
+}
+
+function stopConfetti(){
+  if(confettiAnim) clearInterval(confettiAnim);
+  const canvas = document.getElementById("confetti");
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+</script>
+
+</body>
+</html>
