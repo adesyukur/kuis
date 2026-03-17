@@ -151,7 +151,7 @@ function showResult() {
       <button class="danger" id="tolakBtn" onclick="playClick(); tolakTakdir()">Tolak Takdir ❌</button>
       <button onclick="playClick(); resetTries()">Reset 🤯</button>
     `;
-  },1200);
+  },2200);
 }
 
 function tolakTakdir(){
@@ -165,7 +165,7 @@ function tolakTakdir(){
   setTimeout(()=>{
     q.innerText = "⚠️ Takdirmu sudah diputuskan dan tidak dapat ditolak😛";
     // tombol tersisa cuma Coba Lagi & Reset, tidak perlu buat ulang karena Tolak Takdir sudah dihapus
-  },800);
+  },1800);
 }
 
 function resetTries(){
