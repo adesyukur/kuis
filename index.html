@@ -5,53 +5,25 @@
 <title>Kuis Jodoh 😏</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  margin: 0;
-  padding: 20px;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #ffe6f0, #ffd9f0);
-}
-.box {
-  background: linear-gradient(145deg, #ffffff, #ffe6f0);
-  padding: 30px;
-  border-radius: 25px;
-  max-width: 400px;
-  width: 100%;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-  position: relative;
-  animation: fadeIn 1s ease;
-}
-.box::before {
-  content: "💖";
-  position: absolute;
-  top: -15px;
-  right: -15px;
-  font-size: 40px;
-  animation: floatHeart 3s infinite;
-}
+body { font-family: Arial, sans-serif; text-align:center; margin:0; padding:20px; min-height:100vh; display:flex; justify-content:center; align-items:center; background:linear-gradient(135deg,#ffe6f0,#ffd9f0);}
+.box { background:linear-gradient(145deg,#ffffff,#ffe6f0); padding:30px; border-radius:25px; max-width:400px; width:100%; box-shadow:0 15px 30px rgba(0,0,0,0.15); position:relative; animation:fadeIn 1s ease;}
+.box::before { content:"💖"; position:absolute; top:-15px; right:-15px; font-size:40px; animation:floatHeart 3s infinite;}
 @keyframes fadeIn {from {opacity:0; transform:translateY(20px);} to {opacity:1; transform:translateY(0);}}
 @keyframes floatHeart {0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
-h2 {transition: all 0.5s ease; min-height:50px;}
-button {
-  display: block; width:100%; margin:10px 0; padding:14px;
-  border:none; border-radius:12px; background:#ff66a3; color:white;
-  font-size:16px; cursor:pointer; transition: all 0.3s ease;
-}
+h2 {transition:all 0.5s ease; min-height:50px;}
+button {display:block;width:100%;margin:10px 0;padding:14px;border:none;border-radius:12px;background:#ff66a3;color:white;font-size:16px;cursor:pointer;transition:all 0.3s ease;}
 button:hover {background:#ff3385; transform:translateY(-2px); box-shadow:0 5px 15px rgba(0,0,0,0.2);}
 .danger {background:#666;}
 .danger:hover {background:#444;}
 canvas {position:fixed; pointer-events:none; top:0; left:0; width:100%; height:100%; z-index:999;}
+a.whatsapp {display:block;margin-top:20px;color:#25D366;font-weight:bold;font-size:18px;text-decoration:none;padding:12px 0;border-radius:10px;background:#e0ffe5;transition:0.3s;}
+a.whatsapp:hover {background:#c2ffc7;}
 </style>
 </head>
 <body>
 
 <div class="box">
-<h2 id="question">Kuis siapa jodohmu 😍</h2>
+<h2 id="question">Kuis siapa jodohmu😍</h2>
 <div id="answers">
   <button onclick="startQuiz()">Mulai</button>
 </div>
@@ -64,95 +36,82 @@ canvas {position:fixed; pointer-events:none; top:0; left:0; width:100%; height:1
 
 <script>
 const questions = [
-  { q: "Kamu tipe orang?", a: ["Santai","Serius","Random"] },
-  { q: "Warna favorit?", a: ["Merah	🟥","Biru	🟦","Hitam	⬛️","Pink	🩷"] },
-  { q: "Kalau chat?", a: ["Cepat	💨","Lama	🐢","Ghosting 😶"] },
+  { q: "Kamu tipe orang yang?", a: ["Santai","Serius","Random"] },
+  { q: "Kamu suka warna apa?", a: ["Merah	🟥","Biru	🟦","Hitam	⬛️","Pink	🩷"] },
+  { q: "Kalau chat kamu tipe yang balesnya?", a: ["Cepat	💨","Lama	🐢","Ghosting 😶"] },
   { q: "Lebih suka makan apa?", a: ["Cokelat	🍫","Es Krim	🍨","Sushi	🍣","Pizza	🍕"] }
 ];
 
-// Semua jawaban random untuk quiz
+
 const quizResponses = [
-  "😉 Mau jawab apapun... jodohmu ya orang yang mengirimkan kuis ini",
-  "😆 Gak akan berubah... jodohmu yang mengirimkan kuis ini",
-  "😂 Hasilnya konsisten... jodohmu pengirim kuis ini",
-  "😈 Mau berapa kali juga... jodohmu tetap orang yang mengirimkan kuis ini"
+  "😀 Mau jawab apapun... jodohmu tetap orang yang mengirimkan kuis ini",
+  "😆 Seriusan... jodohmu tuh orang yang ngirimin kuis ini",
+  "😂 Hasilnya konsisten... sudah jelas jodohmu pengirim kuis ini",
+  "😈 Mau berapa kali juga... jodohmu tuh gak akan berubah" ,
+	"😋 Ulang aja lagi.. jodohmu ya yang ngirim kuis ini" ,
+	"😎 Udah jelas jodohmu ya yang bikin kuis ini"
 ];
 
-// Jawaban random untuk Tolak Takdir kedua kali
 const tolakResponses = [
   "😏 Masih nolak… yakin?",
   "🥹 Kenapa nolak terus? kenapa gak cobain dulu",
   "🤭 Nolak lagi? dibilangin gak bisa",
   "😑 Hobi banget nolak, keras kepala banget" ,
-	"🤔 Nolak itu buat buka puasa kan? itu KOLAK"
+	"🤔 Nolak itu buat buka puasa kan? itu KOLAK!"
 ];
 
-let step = -1;
-const firstAttemptKey = "firstAttempt";
-const tolakFirstKey = "tolakFirst";
-let confettiAnim = null;
+let step=-1;
+const firstAttemptKey="firstAttempt";
+const tolakFirstKey="tolakFirst";
+let confettiAnim=null;
 
-const clickSound = document.getElementById("clickSound");
-const confettiSound = document.getElementById("confettiSound");
+const clickSound=document.getElementById("clickSound");
+const confettiSound=document.getElementById("confettiSound");
 
 function playClick(){ clickSound.currentTime=0; clickSound.play().catch(()=>{}); }
 
-function startQuiz() {
-  playClick();
-  nextQuestion();
-}
+function startQuiz(){ playClick(); nextQuestion(); }
 
-function nextQuestion() {
+function nextQuestion(){
   step++;
-  const q = document.getElementById("question");
-  const a = document.getElementById("answers");
-
-  if(step < questions.length){
-    q.innerText = questions[step].q;
+  const q=document.getElementById("question");
+  const a=document.getElementById("answers");
+  if(step<questions.length){
+    q.innerText=questions[step].q;
     a.innerHTML="";
     questions[step].a.forEach(ans=>{
-      const btn = document.createElement("button");
-      btn.innerText = ans;
-      btn.onclick = ()=>{
-        playClick();
-        nextQuestion();
+      const btn=document.createElement("button");
+      btn.innerText=ans;
+      btn.onclick=()=>{
+        playClick(); nextQuestion();
       };
       a.appendChild(btn);
     });
-  } else {
-    showResult();
-  }
+  }else{ showResult(); }
 }
 
-function getRandom(arr){
-  return arr[Math.floor(Math.random()*arr.length)];
-}
+function getRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-function showResult() {
+function showResult(){
   stopConfetti();
-  const q = document.getElementById("question");
-  const a = document.getElementById("answers");
-
-  q.innerText = "🔍 Menganalisis jawaban...";
+  const q=document.getElementById("question");
+  const a=document.getElementById("answers");
+  q.innerText="🔍 Menganalisis jawaban...";
   a.innerHTML="";
-
   setTimeout(()=>{
-    let message = "";
+    let message="";
     if(!sessionStorage.getItem(firstAttemptKey)){
-      message = "Jodohmu adalah orang yang mengirimkan kuis ini	😘";
+      message="Jodohmu adalah orang yang mengirimkan kuis ini	😘😘😘";
       sessionStorage.setItem(firstAttemptKey,"done");
-    } else {
-      message = getRandom(quizResponses);
-    }
-
-    q.innerText = message;
+    }else{ message=getRandom(quizResponses); }
+    q.innerText=message;
     launchConfetti();
     confettiSound.currentTime=0;
     confettiSound.play().catch(()=>{});
-
-    a.innerHTML = `
+    a.innerHTML=`
       <button onclick="playClick(); location.reload()">Coba Lagi ❓</button>
       <button class="danger" id="tolakBtn" onclick="playClick(); tolakTakdir()">Tolak Takdir ❌</button>
+      <button onclick="playClick(); terimaJodoh()">Terima ❤️</button>
       <button onclick="playClick(); resetTries()">Reset 🔁</button>
     `;
   },2200);
@@ -160,79 +119,77 @@ function showResult() {
 
 function tolakTakdir(){
   stopConfetti();
-  const q = document.getElementById("question");
-  const tolakBtn = document.getElementById("tolakBtn");
-  if(tolakBtn) tolakBtn.remove(); // tombol hilang
-  const a = document.getElementById("answers");
-
-  let message = "";
-  if(!sessionStorage.getItem(tolakFirstKey)){
-    message = "⚠️ Takdirmu sudah diputuskan dan tidak dapat ditolak	😛";
-    sessionStorage.setItem(tolakFirstKey,"done");
-  } else {
-    message = getRandom(tolakResponses);
-  }
-
+  const q=document.getElementById("question");
+  const tolakBtn=document.getElementById("tolakBtn");
+  if(tolakBtn) tolakBtn.remove(); // Hanya tombol Tolak Takdir hilang
+  const a=document.getElementById("answers");
   q.innerText="😤 Menolak takdir...";
+  a.innerHTML=""; 
   setTimeout(()=>{
-    q.innerText = message;
+    let message="";
+    if(!sessionStorage.getItem(tolakFirstKey)){
+      message="⚠️ Takdirmu sudah diputuskan dan tidak dapat ditolak😛";
+      sessionStorage.setItem(tolakFirstKey,"done");
+    }else{ message=getRandom(tolakResponses); }
+    q.innerText=message;
+    // tombol lain tetap ada
+    let buttons = '';
+    buttons += '<button onclick="playClick(); location.reload()">Coba Lagi ❓</button>';
+    buttons += '<button onclick="playClick(); terimaJodoh()">Terima ❤️</button>';
+    buttons += '<button onclick="playClick(); resetTries()">Reset 🔁</button>';
+    a.innerHTML=buttons;
   },1100);
 }
 
-function resetTries(){
-  sessionStorage.clear();
+function terimaJodoh(){
   stopConfetti();
-  location.reload();
+  const q=document.getElementById("question");
+  const a=document.getElementById("answers");
+  q.innerText="❤️ Kamu menerima jodohmu!";
+  a.innerHTML=`
+    <p>Yeay! Sekarang kamu bisa chat langsung ke aku 😊</p>
+    <a class="whatsapp" href="https://wa.me/6281321909129" target="_blank">💬 Chat via WhatsApp</a>
+  `;
 }
 
-// Confetti
+function resetTries(){ sessionStorage.clear(); stopConfetti(); location.reload(); }
+
 function launchConfetti(){
   stopConfetti();
-  const canvas = document.getElementById("confetti");
-  const ctx = canvas.getContext("2d");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  const confettiCount = 150;
-  const confetti = [];
-
+  const canvas=document.getElementById("confetti");
+  const ctx=canvas.getContext("2d");
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+  const confettiCount=150;
+  const confetti=[];
   for(let i=0;i<confettiCount;i++){
-    confetti.push({
-      x: Math.random()*canvas.width,
-      y: Math.random()*canvas.height - canvas.height,
-      r: Math.random()*6+4,
-      d: Math.random()*confettiCount,
-      color: `hsl(${Math.random()*360}, 100%, 50%)`,
-      tilt: Math.random()*10-10
-    });
+    confetti.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height-canvas.height,r:Math.random()*6+4,d:Math.random()*confettiCount,color:`hsl(${Math.random()*360},100%,50%)`,tilt:Math.random()*10-10});
   }
-
-  let angle = 0;
-  confettiAnim = setInterval(()=>{
+  let angle=0;
+  confettiAnim=setInterval(()=>{
     ctx.clearRect(0,0,canvas.width,canvas.height);
     confetti.forEach(c=>{
       ctx.beginPath();
-      ctx.lineWidth = c.r/2;
-      ctx.strokeStyle = c.color;
-      ctx.moveTo(c.x+c.tilt+angle/2, c.y);
-      ctx.lineTo(c.x+c.tilt, c.y+c.tilt+angle/2);
+      ctx.lineWidth=c.r/2;
+      ctx.strokeStyle=c.color;
+      ctx.moveTo(c.x+c.tilt+angle/2,c.y);
+      ctx.lineTo(c.x+c.tilt,c.y+c.tilt+angle/2);
       ctx.stroke();
     });
-    angle += 0.01;
+    angle+=0.01;
     confetti.forEach(c=>{
-      c.y += Math.cos(angle+c.d)+1+c.r/2;
-      c.x += Math.sin(angle);
-      if(c.y>canvas.height){c.y=0; c.x=Math.random()*canvas.width;}
+      c.y+=Math.cos(angle+c.d)+1+c.r/2;
+      c.x+=Math.sin(angle);
+      if(c.y>canvas.height){c.y=0;c.x=Math.random()*canvas.width;}
     });
   },20);
-
-  setTimeout(()=>stopConfetti(),50500);
+  setTimeout(()=>stopConfetti(),2500);
 }
 
 function stopConfetti(){
   if(confettiAnim) clearInterval(confettiAnim);
-  const canvas = document.getElementById("confetti");
-  const ctx = canvas.getContext("2d");
+  const canvas=document.getElementById("confetti");
+  const ctx=canvas.getContext("2d");
   ctx.clearRect(0,0,canvas.width,canvas.height);
 }
 </script>
