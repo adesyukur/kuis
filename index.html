@@ -51,7 +51,7 @@ canvas {position:fixed; pointer-events:none; top:0; left:0; width:100%; height:1
 <body>
 
 <div class="box">
-<h2 id="question">Kuis siapa jodohmu? 😍</h2>
+<h2 id="question">Kuis siapa jodohmu 😍</h2>
 <div id="answers">
   <button onclick="startQuiz()">Mulai</button>
 </div>
@@ -64,27 +64,32 @@ canvas {position:fixed; pointer-events:none; top:0; left:0; width:100%; height:1
 
 <script>
 const questions = [
-  { q: "Kamu tipe orang seperti apa?", a: ["Santai","Serius","Random"] },
-  { q: "Apa warna favorit kamu?", a: ["Merah","Biru","Hitam","Pink"] },
-  { q: "Kalau chat kamu bales?", a: ["Cepat","Lama","Ghosting 😶"] },
-  { q: "Lebih suka makan?", a: ["Cokelat","Es Krim","Sushi","Pizza"] }
+  { q: "Kamu tipe orang?", a: ["Santai","Serius","Random"] },
+  { q: "Warna favorit?", a: ["Merah	🟥","Biru	🟦","Hitam	⬛️","Pink	🩷"] },
+  { q: "Kalau chat?", a: ["Cepat	💨","Lama	🐢","Ghosting 😶"] },
+  { q: "Lebih suka makan apa?", a: ["Cokelat	🍫","Es Krim	🍨","Sushi	🍣","Pizza	🍕"] }
 ];
 
-const responses = [
-  "😏 Mau jawab apapun... tetap orang yang mengirimkan kuis ini",
-  "😂 Ngulang lagi? hasilnya tetap orang yang mengirimkan kuis ini",
-  "😈 Maksa ya? tetap saja orang yang mengirimkan kuis ini",
-  "💀 Udah deh... tidak bisa kabur dari orang yang mengirimkan kuis ini",
-  "😆 Serius deh... tetap orang yang mengirimkan kuis ini",
-  "🤭 Kamu berharap beda? tetap orang yang mengirimkan kuis ini",
-  "😜 Jawabanmu tidak mengubah takdir... tetap orang yang mengirimkan kuis ini",
-  "😎 Sistem sudah memastikan... tetap orang yang mengirimkan kuis ini",
-  "🤣 Hasilnya konsisten... orang yang mengirimkan kuis ini",
+// Semua jawaban random untuk quiz
+const quizResponses = [
+  "😉 Mau jawab apapun... tetap orang yang mengirimkan kuis ini",
+  "😆 Gak akan berubah... tetap orang yang mengirimkan kuis ini",
+  "😂 Hasilnya konsisten... orang yang mengirimkan kuis ini",
   "😈 Mau berapa kali juga... tetap orang yang mengirimkan kuis ini"
+];
+
+// Jawaban random untuk Tolak Takdir kedua kali
+const tolakResponses = [
+  "😏 Masih nolak… yakin?",
+  "🥹 Kenapa nolak terus? kenapa gak cobain dulu",
+  "🤭 Nolak lagi? dibilangin gak bisa",
+  "😑 Hobi banget nolak, keras kepala banget" ,
+	"🤔 Nolak itu buat buka puasa kan? itu KOLAK"
 ];
 
 let step = -1;
 const firstAttemptKey = "firstAttempt";
+const tolakFirstKey = "tolakFirst";
 let confettiAnim = null;
 
 const clickSound = document.getElementById("clickSound");
@@ -119,9 +124,8 @@ function nextQuestion() {
   }
 }
 
-function getRandomResponse() {
-  let index = Math.floor(Math.random()*responses.length);
-  return responses[index];
+function getRandom(arr){
+  return arr[Math.floor(Math.random()*arr.length)];
 }
 
 function showResult() {
@@ -135,10 +139,10 @@ function showResult() {
   setTimeout(()=>{
     let message = "";
     if(!sessionStorage.getItem(firstAttemptKey)){
-      message = "Jodohmu adalah orang yang mengirimkan kuis ini😘";
+      message = "Jodohmu adalah orang yang mengirimkan kuis ini	😘";
       sessionStorage.setItem(firstAttemptKey,"done");
     } else {
-      message = getRandomResponse();
+      message = getRandom(quizResponses);
     }
 
     q.innerText = message;
@@ -147,9 +151,9 @@ function showResult() {
     confettiSound.play().catch(()=>{});
 
     a.innerHTML = `
-      <button onclick="playClick(); location.reload()">Coba Lagi 🧐</button>
+      <button onclick="playClick(); location.reload()">Coba Lagi ❓</button>
       <button class="danger" id="tolakBtn" onclick="playClick(); tolakTakdir()">Tolak Takdir ❌</button>
-      <button onclick="playClick(); resetTries()">Reset 🤯</button>
+      <button onclick="playClick(); resetTries()">Reset 🔁</button>
     `;
   },2200);
 }
@@ -161,10 +165,17 @@ function tolakTakdir(){
   if(tolakBtn) tolakBtn.remove(); // tombol hilang
   const a = document.getElementById("answers");
 
-  q.innerText = "😤 Menolak takdir...";
+  let message = "";
+  if(!sessionStorage.getItem(tolakFirstKey)){
+    message = "⚠️ Takdirmu sudah diputuskan dan tidak dapat ditolak	😛";
+    sessionStorage.setItem(tolakFirstKey,"done");
+  } else {
+    message = getRandom(tolakResponses);
+  }
+
+  q.innerText="😤 Menolak takdir...";
   setTimeout(()=>{
-    q.innerText = "⚠️ Takdirmu sudah diputuskan dan tidak dapat ditolak😛";
-    // tombol tersisa cuma Coba Lagi & Reset, tidak perlu buat ulang karena Tolak Takdir sudah dihapus
+    q.innerText = message;
   },1800);
 }
 
